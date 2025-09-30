@@ -1,2 +1,1 @@
-# lab_device
-Laboratory task for Github Actions/testing
+Realization work of Simple Separator. Lab 1. Var 3.
