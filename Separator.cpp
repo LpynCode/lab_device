@@ -68,6 +68,30 @@ void testStream() {
     assert(testStream->getMassFlow() == 20.0);
 }
 
+void testSimpleSeparator() {
+    shared_ptr<Stream> s1(new Stream());
+    s1->setMassFlow(10.0);
+
+    shared_ptr<Stream> s2(new Stream());
+    shared_ptr<Stream> s3(new Stream());
+
+    SimpleSeparator separator(0.5);
+    assert(separator.getSplittingRatio() == 0.5);
+
+    separator.addInput(s1);
+    separator.addOutput(s2);
+    separator.addOutput(s3);
+
+    separator.updateOutputs();
+
+    assert(s2->getMassFlow() == 5.0);
+    assert(s3->getMassFlow() == 5.0);
+}
+
+void runTests () {
+    testStream();
+    testSimpleSeparator();
+}
 
 int main() {
     shared_ptr<Stream> s1(new Stream());
@@ -86,6 +110,8 @@ int main() {
     s1->print();
     s2->print();
     s3->print();
+
+    runTests();
 
     return 0;
 }
