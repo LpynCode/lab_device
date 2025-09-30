@@ -21,13 +21,66 @@ class Stream
       Stream(){ id = generateId(); }
       void setMassFlow(double m) { mass_flow=m; }
       double getMassFlow() { return mass_flow; }
-      void print(){ cout<<"Stream: "<<id<<", flow: "<< mass_flow <<endl; }
+      void print(){ cout<<"Stream: "<<id<<", flow: "<<mass_flow<<endl; }
 };
+
+class Device
+{
+    protected:
+      vector<shared_ptr<Stream>> inputs;
+      vector<shared_ptr<Stream>> outputs;
+    public:
+      void addInput(shared_ptr<Stream> s){ inputs.push_back(s); }
+      void addOutput(shared_ptr<Stream> s){ outputs.push_back(s); }
+      virtual void updateOutputs() = 0;
+};
+
+class SimpleSeparator : public Device {
+    private:
+        double splittingRatio;
+
+    public:
+        SimpleSeparator(double ratio) : splittingRatio(ratio) {}
+
+        void setSplittingRatio(double ratio) {
+            splittingRatio = ratio;
+        }
+
+        double getSplittingRatio() {
+            return splittingRatio;
+        }
+
+        void updateOutputs() override {
+            if (inputs.size() < 1 || outputs.size() < 2) {
+                cerr << "Not enough input or output streams are set for SimpleSeparator!" << endl;
+                return;
+            }
+
+            double inputMassFlow = inputs[0]->getMassFlow();
+            outputs[0]->setMassFlow(inputMassFlow * splittingRatio);
+            outputs[1]->setMassFlow(inputMassFlow * (1 - splittingRatio));
+        }
+};
+
+
 
 int main() {
     shared_ptr<Stream> s1(new Stream());
     shared_ptr<Stream> s2(new Stream());
     shared_ptr<Stream> s3(new Stream());
+
+    s1->setMassFlow(15.0);
+
+    SimpleSeparator separator(0.6);
+    separator.addInput(s1);
+    separator.addOutput(s2);
+    separator.addOutput(s3);
+
+    separator.updateOutputs();
+
+    s1->print();
+    s2->print();
+    s3->print();
 
     return 0;
 }
