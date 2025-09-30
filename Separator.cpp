@@ -62,6 +62,11 @@ class SimpleSeparator : public Device {
         }
 };
 
+void testStream() {
+    shared_ptr<Stream> testStream(new Stream());
+    testStream->setMassFlow(20.0);
+    assert(testStream->getMassFlow() == 20.0);
+}
 
 
 int main() {
